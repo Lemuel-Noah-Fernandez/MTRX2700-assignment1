@@ -37,7 +37,14 @@ back_counter   DS.B 1   ; Byte to store counter
 t_0            DS.B 2   ; Timer variable
 time_taken     DS.B 2   ; Another time variable
 PORT_H_MASK    EQU %00000011
-output_code    FDB $9874
+
+; Definitions for 7seg
+inputs      FCC "0123456789AbCdEF"         ;inputs
+outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71    ;corresponding hex codes
+dig1_index  DS.B 1                         ;variable to hold index of first digit
+dig2_index  DS.B 1                         ;variable for index of second digit
+to_display:  FDB "F0"                       ;to be displayed on 7seg
+output_code:FDB $0000                      ;variable to hold 7seg code of
 
 
 ; code section
@@ -68,12 +75,12 @@ _Startup:
 mainLoop:
             movw  #baud_rate, 2, -SP  ; Set two bytes for baud rate onto the stack
             movb #mTSCR1_TEN, TSCR1   ; Initialisign the timer
+            jsr   SCI1_setup
             ldx #0
             stx counter
             stx back_counter
             ldx #input_string
             ldy #output_string
-            jsr   SCI1_setup
             
             bra initialise_io
             
@@ -115,10 +122,9 @@ read_serial:
             beq read_serial ; Checks for a new character
             ldab  SCI1DRL   ; Reads new character into B
             
-            stab 0, y       ; 
+            stab 0, y       ; Stores ascii value into output_string
             iny
             inc counter
-            bra final
             
 initialise_io:
             SEI
@@ -132,6 +138,54 @@ initialise_io:
             STAA DDRP         ;set port P (7seg enable) to output
             STAA DDRB         ;set port B (7seg data)  to output
             ;RTS  
+           
+convert_setup:    
+            ;CHANGE TO OUTPUT_STRING?
+            LDY #to_display        ;load the memory address of the first character
+convert_start:
+            LDX #inputs           ;load the lookup array into X register
+            LDAA #0               ;initiliase counter to iterate array
+convert_loop:
+            LDAB a, x             ;loadnext char from lookup aray
+            CMPB y                ;compare to char that we want to display
+            BEQ equivalent_found  ;if equal, branch
+            INCA                  ;if not, increment counter
+            BRA convert_loop
+
+equivalent_found:
+            LDX #output_code      ;next four lines check if the first digit has been filled
+            LDAB x
+            CMPB #0
+            BNE second_digit
+            
+            STAA dig1_index
+            JSR get_output_code1
+            INY                   ;increment Y so we are looking at 2nd input digit 
+            BRA convert_start     ;
+second_digit:
+            STAA dig2_index
+            JSR get_output_code2
+            BRA output7seg
+
+
+;*********These require the index variables are filled in, they fill*********
+;*********            in "output_code" with the correct val.        *********
+          
+get_output_code1:
+            LDAA dig1_index       ;load the index of the digit into A
+            LDX #outputs          ;load the array of output codes into X 
+            LDAB a, x             ;load the correct output code into B
+            LDX #output_code      ;load the output variable
+            STAB x                ;put the correct output code into the variable
+            RTS 
+            
+get_output_code2:                 
+            LDAA dig2_index       ;load the index of the digit into A
+            LDX #outputs          ;load the array of output codes into X
+            LDAB a, x             ;load the correct output code into B
+            LDX #output_code      ;load the output variable
+            STAB 1, x             ;put the correct output code into the variables 2nd pos
+            RTS
                       
 output7seg:                                  
             ldaa #$0E         ;loads 00001110 to enable first 7seg
