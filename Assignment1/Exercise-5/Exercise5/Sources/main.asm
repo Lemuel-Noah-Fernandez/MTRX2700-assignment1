@@ -81,8 +81,9 @@ mainLoop:
             stx back_counter
             ldx #input_string
             ldy #output_string
+            ldaa counter
             
-            bra initialise_io
+            ;bra read_serial
             
 ; Start timer now
 subroutine_timer:      
@@ -104,10 +105,13 @@ string_to_serial:
             bpl string_to_serial
             
             ldab 0, x
-            cmpb null
-            beq  return        ; End program if string is finished
+            ;cmpb null
+            ;beq  return        ; End program if string is finished
             stab SCI1DRL       ; Store in serial port
-            inx                
+            inx 
+            cmpa #6
+            beq  return   
+            inca            
             bra string_to_serial
   
 return:
@@ -141,7 +145,7 @@ initialise_io:
            
 convert_setup:    
             ;CHANGE TO OUTPUT_STRING?
-            LDY #to_display        ;load the memory address of the first character
+            LDY #output_string;#to_display        ;load the memory address of the first character
 convert_start:
             LDX #inputs           ;load the lookup array into X register
             LDAA #0               ;initiliase counter to iterate array
