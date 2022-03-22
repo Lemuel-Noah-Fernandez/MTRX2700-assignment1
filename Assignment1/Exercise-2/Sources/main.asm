@@ -21,10 +21,18 @@ PORT_H_MASK EQU %00000011
  
 inputs      FCC "0123456789AbCdEF"         ;inputs
 outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71    ;corresponding hex codes
+
 dig1_index  DS.B 1                         ;variable to hold index of first digit
 dig2_index  DS.B 1                         ;variable for index of second digit
+
+
 to_display:  FDB "F0"                       ;to be displayed on 7seg
+
+
 output_code:FDB $0000                      ;variable to hold 7seg code of to_display
+
+to_convert DC.B 8
+ascii_value DS.B 1
 
 ; code section
             ORG   ROMStart
@@ -36,7 +44,7 @@ _Startup:
 
             CLI                   ; enable interrupts
             BSR initialise_io     ;configure output ports and input interupts
-            BRA main
+            JSR convert_to_ascii
  
             
 ;******* This runs at startup and configures the relevant output ports *******            
@@ -57,7 +65,7 @@ initialise_io:
 ;******          This is the entry point for the main function          ******
 
 main:           
-convert_setup:    
+convert:    
             LDY #to_display        ;load the memory address of the first character
 convert_start:
             LDX #inputs           ;load the lookup array into X register
@@ -136,7 +144,15 @@ delay:
               bne delay_loop  ;loop until y == 0
               rts
               
-              
+;**************************************************************
+;*  Simple Function to convert a number to it's ASCII value   *
+;**************************************************************  
+
+convert_to_ascii:
+           LDAA to_convert
+           ADDA #48
+           STAA ascii_value
+           RTS             
               
               
 ;******** The following sections are for the interupts when a button is pressed ********

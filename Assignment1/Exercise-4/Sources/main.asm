@@ -64,7 +64,9 @@ subroutine_timer:
            SEI
            LDD TCNT              ;load current timer count in D
            STD t_0               ;store in t_0 variable
+           
            JSR dummy_subroutine  ;jump to subroutine to be tested
+           
            LDD TCNT              ;once subroutine returns load timer count
            CLI
            SUBD t_0              ;subtract t_0 to get difference in count
