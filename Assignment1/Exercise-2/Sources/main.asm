@@ -20,11 +20,11 @@ PORT_H_MASK EQU %00000011
 
  
 inputs      FCC "0123456789AbCdEF"         ;inputs
-outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71
-dig1_index  DS.B 1
-dig2_index  DS.B 1
-toDisplay:  FDB "F0"
-output_code:FDB $0000
+outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71    ;corresponding hex codes
+dig1_index  DS.B 1                         ;variable to hold index of first digit
+dig2_index  DS.B 1                         ;variable for index of second digit
+to_display:  FDB "F0"                       ;to be displayed on 7seg
+output_code:FDB $0000                      ;variable to hold 7seg code of to_display
 
 ; code section
             ORG   ROMStart
@@ -42,12 +42,12 @@ _Startup:
 ;******* This runs at startup and configures the relevant output ports *******            
 ;******* it also enables interupts from the buttons connected to port H*******
 initialise_io:
-            SEI
+            SEI                ;disable interrupts for setup
             LDAA #PORT_H_MASK
-            STAA PIEH
+            STAA PIEH          ;set port H[0:1] buttons to trigger interrupts
             COMA
-            STAA PPSH
-            CLI
+            STAA PPSH          ;set port H[0:1] buttons to trigger on falling edge
+            CLI                ;enable interrupts
             
             LDAA #$FF
             STAA DDRP         ;set port P (7seg enable) to output
@@ -58,7 +58,7 @@ initialise_io:
 
 main:           
 convert_setup:    
-            LDY #toDisplay        ;load the memory address of the first character
+            LDY #to_display        ;load the memory address of the first character
 convert_start:
             LDX #inputs           ;load the lookup array into X register
             LDAA #0               ;initiliase counter to iterate array
@@ -132,8 +132,8 @@ delay:
                               ;delay by 1ms
             ldy #$6000        ;load $6000
             delay_loop:
-              dey
-              bne delay_loop
+              dey             ;decrement y
+              bne delay_loop  ;loop until y == 0
               rts
               
               

@@ -8687,11 +8687,11 @@ PORT_H_MASK EQU %00000011
 
  
 inputs      FCC "0123456789AbCdEF"         ;inputs
-outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71
-dig1_index  DS.B 1
-dig2_index  DS.B 1
-toDisplay:  FDB "F0"
-output_code:FDB $0000
+outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71    ;corresponding hex codes
+dig1_index  DS.B 1                         ;variable to hold index of first digit
+dig2_index  DS.B 1                         ;variable for index of second digit
+to_display:  FDB "F0"                       ;to be displayed on 7seg
+output_code:FDB $0000                      ;variable to hold 7seg code of to_display
 
 ; code section
             ORG   ROMStart
@@ -8725,7 +8725,7 @@ initialise_io:
 
 main:           
 convert_setup:    
-            LDY #toDisplay        ;load the memory address of the first character
+            LDY #to_display        ;load the memory address of the first character
 convert_start:
             LDX #inputs           ;load the lookup array into X register
             LDAA #0               ;initiliase counter to iterate array

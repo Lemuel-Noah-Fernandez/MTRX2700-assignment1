@@ -1,12 +1,4 @@
-;*****************************************************************
-;* This stationery serves as the framework for a                 *
-;* user application (single file, absolute assembly application) *
-;* For a more comprehensive program that                         *
-;* demonstrates the more advanced functionality of this          *
-;* processor, please see the demonstration applications          *
-;* located in the examples subdirectory of the                   *
-;* Freescale CodeWarrior for the HC12 Program directory          *
-;*****************************************************************
+
 
 ; export symbols
             XDEF Entry, _Startup            ; export 'Entry' symbol
@@ -8703,84 +8695,34 @@ counter DS.B 1
 Entry:
 _Startup:
             LDS   #RAMEnd+1       ;initialize the stack pointer
-            SEI
+            SEI                   ;disable interrupts for setup
             
-            MOVB #0, counter
-            
-
-            CLI                   ;enable interrupts
+            MOVB #0, counter      ;set counter as 0
             MOVB #$FF, DDRB       ;configure LEDs to output for delay demo
             
-            BRA interupt_demo
+            CLI                   ;enable interrupts
             
+            BRA interupt_demo     ;change to whatever you want to demo
             
+;**************************************************************
+;*                         Interupts                          *
+;**************************************************************            
 
 interupt_demo:
-            MOVB #mTSCR1_TEN, TSCR1
-            MOVB #mTSCR2_TOI, TSCR2
+            MOVB #mTSCR1_TEN, TSCR1  ;enable the timer
+            MOVB #mTSCR2_TOI, TSCR2  ;set the prescaler value to 1
             BSET TFLG2, #mTFLG2_TOF
             MOVB #$FF, PORTB
-iloop:
-            BRA *
+empty_loop:
+           BRA *
 
 
-
-fixed_delay:
-            LDY #$FFFF
-            fixed_delay_loop:
-              DEY
-              BNE fixed_delay_loop
-              LDX #$FFFF
-              fixed_delay_inner_loop:
-                DEX
-                BNE fixed_delay_inner_loop
-              RTS
-              
-timer_overflow:
-            INC counter
-            BVS counter_overflow
-end_isr:
-            LDX TCNT
-            BSET TFLG2, #mTFLG2_TOF
-            RTI
-
-
-
-
-counter_overflow:         
-            MOVB #$80, PORTB
-            JSR fixed_delay
-            MOVB #$40, PORTB
-            JSR fixed_delay
-            MOVB #$20, PORTB
-            JSR fixed_delay
-            MOVB #$10, PORTB
-            JSR fixed_delay
-            MOVB #$08, PORTB
-            JSR fixed_delay
-            MOVB #$04, PORTB
-            JSR fixed_delay
-            MOVB #$02, PORTB
-            JSR fixed_delay
-            MOVB #$01, PORTB
-            JSR fixed_delay
             
-            BRA end_isr
-
-
-
-
-
-
-loop:       
-            BSET PTT, #%00100000
-            LDAA #$FF
-            STAA PORTB
-            JSR variable_delay
-            CLR PORTB
-            JSR variable_delay
-            BRA loop
-
+            
+            
+;**************************************************************
+;*                    Subroutine Timer                        *
+;**************************************************************
 
             
 subroutine_timer:      
@@ -8799,9 +8741,7 @@ subroutine_timer:
                        
             
 
-
-
-dummy_subroutine:
+dummy_subroutine:                ;random operations to test subroutine timer
             LDAA #$10
             SUBA #$01
             LDAB #41
@@ -8810,8 +8750,16 @@ dummy_subroutine:
             rts
 
 
+;**************************************************************
+;*                    Variable Delay                          *
+;**************************************************************
 
-
+variable_delay_demo:       
+            MOVB #$FF, PORTB        ;turn on the LEDs
+            JSR variable_delay      ;delay
+            CLR PORTB               ;turn off LEDs
+            JSR variable_delay      ;delay
+            BRA variable_delay_demo ;loop
 
 variable_delay:
             MOVB #$90, TSCR1       ;enable the time and fast flag clear
@@ -8829,11 +8777,52 @@ delay_loop_inner:
             dbne y, delay_loop     ;decrement Y and loop back to another 10ms delay
             rts                    ;return
                         
+;**************************************************************
+;*                 Interrupt Functions                        *
+;**************************************************************
+            
+timer_overflow:
+            INC counter            ;if timer overflows increment counter
+            BVS counter_overflow   ;if counter overflows branch
+end_isr:
+            LDX TCNT                 ;get timer for debugging in simulator
+            BSET TFLG2, #mTFLG2_TOF  ;reset interrupt flag
+            RTI                      ;exit isr
 
+
+
+
+counter_overflow:                    ;flash on each LED from MSB to LSB with short delay
+            MOVB #$80, PORTB         ;this gives a visual to demonstrate a function being
+            JSR fixed_delay          ;called periodically to a high accuracy
+            MOVB #$40, PORTB
+            JSR fixed_delay
+            MOVB #$20, PORTB
+            JSR fixed_delay
+            MOVB #$10, PORTB
+            JSR fixed_delay
+            MOVB #$08, PORTB
+            JSR fixed_delay
+            MOVB #$04, PORTB
+            JSR fixed_delay
+            MOVB #$02, PORTB
+            JSR fixed_delay
+            MOVB #$01, PORTB
+            JSR fixed_delay
+            
+            BRA end_isr              ;branch top finish isr
             
             
-            
-            
+fixed_delay:                         ;short delay subroutine to make LED visuals easier to see
+            LDY #$FFFF
+            fixed_delay_loop:
+              DEY
+              BNE fixed_delay_loop
+              LDX #$FFFF
+              fixed_delay_inner_loop:
+                DEX
+                BNE fixed_delay_inner_loop
+              RTS            
             
 ;**************************************************************
 ;*                 Interrupt Vectors                          *
@@ -8842,4 +8831,4 @@ delay_loop_inner:
             DC.W  Entry           ; Reset Vector
             
             ORG   $FFDE
-            DC.W timer_overflow
+            DC.W timer_overflow   ; Timer overflow interupt
