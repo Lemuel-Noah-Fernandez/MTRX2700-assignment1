@@ -1,0 +1,83 @@
+Lab 1 minutes
+
+
+Project Meeting Agenda
+  Group 2
+ 2-5 PM Wednesday 23rd of February 2022
+ 
+ 
+ Present:Lemuel, Duncan, Ethan
+ 
+ Apologies: 
+ N/A
+ 
+ Welcome: 
+ Minute Taker: Duncan, 
+ Github Coordinator: Lemuel, 
+ Hardware Officer: Ethan
+ 
+ 
+ Meeting Purpose: 
+●  Introduction to the group
+● Become familiar with the github
+● Become familiar with the different documents you will use during the semester
+● Become familiar with the programming environment
+
+Previous Actions::
+N/A
+
+
+Regular Items
+
+
+
+New Items
+- Copied Clones of Github projects onto each individuals laptops
+- Connected the hardware to CodeWarrior to upload the intro lab file to Github
+
+
+
+Any Other Business
+
+Time and Date of next Meetings
+a) 2nd Wednesday March 2022
+b) 9th Wednesday March 2022
+
+
+
+Documents (what is useful)
+HCS12 device information: 
+* Overview/features of the micro-controller
+* Block diagram
+* Description of all signals, pins and a memory map
+* List of all registers
+
+HSC12 summary instructions:
+● Summary of memory structure
+● Instruction set summary
+● Register information
+
+
+HCS12 serial communication:
+● Overview of serial communication with peripherals
+
+
+HCS12_detailed_instructions:
+    - Includes all the fully detailed features of the HSC12 CPU
+    - Provides specifics on complex functionality of HSC12
+    - Has information on every single command
+    - All related topics such as memory expansion
+    
+ HCS12 timer module:
+    - Specifics on the HCS12 Timer Module and can be referenced when difficulties with the timer functionality arises
+    - Timer is a 16-bit, software-programmable counter driven by a seven-stage programmable prescaler, with modes of operation including Stop, Freeze, Wait and Normal.
+    - Block diagrams
+    - Input Output Functionality
+    
+HCS12 pwm module:
+  - Anything to do with pulse-width modulations
+    
+dragon12_plus_usb_manual.pdf
+    - 
+
+This is a git test, really hope this works
