@@ -8703,6 +8703,9 @@ back_counter   DS.B 1   ; Byte to store counter
 t_0            DS.B 2   ; Timer variable
 time_taken     DS.B 2   ; Another time variable
 PORT_H_MASK    EQU %00000011
+delay_length   EQU 200 ;multiples of 10ms if prescaler=4
+string         DS.B  64    ;allocate 64 bytes
+null_1           equ   $00     ;null for end of string
 
 ; Definitions for 7seg
 inputs         FCC "0123456789AbCdEF"         ;inputs
@@ -8739,6 +8742,7 @@ mainLoop:
             ldy #output_string
             ldaa counter
             
+            jsr regular_message  ;For task 3
             ;bra read_serial ; For task 2
             
 ; Start timer now
@@ -8898,3 +8902,90 @@ SCI1_setup:
            
 final:
             bra final
+            
+            
+regular_message:
+            ldx #$1001
+            
+combined_reader:  
+          ; load the status register from SCI1 and mask the bit $20 which is RDRF
+            ; receive data is available
+            ldaa  SCI1SR1
+            anda  #mSCI1SR1_RDRF
+            
+            ; test if there has been a new character received (else loop)
+            beq   combined_reader
+            
+            ; read the new character into register B
+            ldab  SCI1DRL
+            
+            ; store the character in y array
+            stab 0,y
+            iny                   ;increment y so the next storage is the next index in y
+
+            
+            ; loops again if the character is not carriage return byte. Continues to sender if return byte is triggered
+            cmpb #carriage
+            
+            bne combined_reader
+            
+            jsr variable_delay
+            
+            
+            
+combined_sender: 
+            ; TDRE is the most significant bit of SCI1SR1 (1 indicates empty and ready)
+            ; The following lines
+            ; test the memory address SCI1SR1 and sets the condition control registers
+            ; accordingly. If the most significant bit is 1, the negative flag is 1 and
+            ; visa versa. BPL branches on positive, so will loop until TDRE is ready to send
+            tst   SCI1SR1
+            bpl   combined_sender
+            
+            ; store the char from register B in the SCI output data register
+            ldab x            
+            stab  SCI1DRL
+            
+            ; jumping to variable delay to create delay between omission of characters
+            ;jsr variable_delay
+            
+            ; incrementing x to move forward to the next character to send out            
+            inx
+                       
+            ; checking if this is the end of the string and continues to loop if not
+            cmpb #null_1
+            bne combined_sender
+            
+            ;cmpb #carriage
+            
+            
+            ; returns back
+            rts 
+            
+;**************************************************************
+;*                    Variable Delay                          *
+;**************************************************************
+
+variable_delay_demo:       
+            MOVB #$FF, PORTB
+            JSR variable_delay
+            CLR PORTB
+            JSR variable_delay
+            BRA variable_delay_demo
+
+variable_delay:
+            MOVB #$90, TSCR1       ;enable the time and fast flag clear
+            MOVB #%00000010, TSCR2 ;disable interupts, output compare resets and sets prescaler to /4
+            MOVB #$01, TIOS        ;set channel 0 to output compare
+            
+            LDY #delay_length  ;delay will be (10ms * Y)
+            
+delay_loop1:
+            ldd TCNT               ;load timer count into D
+            ADDD #60000            ;add delay/offset to count
+            std TC0                ;store offset count in compare register
+            
+delay_loop_inner:
+            brclr TFLG1, #01,delay_loop_inner ;loop until timer reaches offset (TCNT == TC0)
+            dbne y, delay_loop     ;decrement Y and loop back to another 10ms delay
+            rts   
