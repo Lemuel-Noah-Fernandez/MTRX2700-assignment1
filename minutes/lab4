@@ -1,0 +1,59 @@
+Lab 4 minutes
+
+
+Project Meeting Agenda
+  Group 2
+ 2-5 PM Wednesday 16th of March 2022
+ 
+ 
+ Physically Present:Lemuel, Duncan, Ethan
+ 
+ Virtually Present: None
+ 
+ Welcome: 
+ Minute Taker: Duncan, 
+ Github Coordinator: Lemuel, 
+ Hardware Officer: Ethan
+ 
+ 
+ Meeting Purpose: 
+- Progress check on each person's individual exercises
+- Coordination and collaboration on remaining exercises
+- Deadline implementation for exercises and completion
+ 
+ 
+ 
+ 
+
+
+Regular Items
+- At beginning of lab, Exercise 1 is 90% complete, Exercise 2 is 90% complete, Exercise 3 is 60% complete
+
+- Virtual port and physical port connections with the Dragon board have been figured out
+
+- Exercise 2: is debouncing required of the button if it sometimes skips? Decided to be left as a discussion question that we understand and can answer as it is not worthwhile to pursue a solution to it
+
+- Exercise 3: Originally a phrase was pushed on the stack and read out after the implementation of the carriage return byte, by pulling off the stack. Now instead of pushing and pulling, the phrase is to be stored in a predetermined array in RAM, and then to be indexed and red
+
+- Exercise 4: Some issues with the timer and how to use it properly
+ 
+- Completed Exercise 1 and 2
+- Exercise 3 is still in progress
+- Exercise 4 is still in progress
+
+
+
+New Items
+- Assigned exercises for this lab
+	- Lemuel and Duncan on exercise 5
+	- Ethan on exercise 4
+
+- Ethan will take home the dragon board for the following week
+and give it to Lemuel on Monday for further testing
+- Deadline of Saturday to try and finish most things
+- Review on Sunday and book another meeting if needed
+
+
+
+
+Any Other Business
