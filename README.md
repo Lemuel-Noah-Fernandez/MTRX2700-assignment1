@@ -36,6 +36,8 @@ Testing and debugging for this module mainly took place in the simulator, using 
 
 ### Serial Input and Output (Ex. 3)
 
+This module focuses on serial interface to send and receive data 
+
 ### Hardware Timer (Ex. 4)
 This module develops functions which utilise the built in hardware timer of the HCS12. The first useful function is `variable_delay`, which can cause a delay of which the length is determined by both the `delay_length` variable and the prescaler. This gives a range of 2.5ms to over 5.8 hours of delay. A default prescaler of 4 is chosen, which sets each increment of `delay_length` to take 10ms. For example, a 1 second delay could be achieved by setting the `delay_length EQU 100`. Note that this variable's value must fit into register D (16-bits).
 
