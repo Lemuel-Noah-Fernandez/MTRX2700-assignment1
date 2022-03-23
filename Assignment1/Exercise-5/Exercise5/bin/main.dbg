@@ -8703,7 +8703,7 @@ back_counter   DS.B 1   ; Byte to store counter
 t_0            DS.B 2   ; Timer variable
 time_taken     DS.B 2   ; Another time variable
 PORT_H_MASK    EQU %00000011
-delay_length   EQU 200 ;multiples of 10ms if prescaler=4
+delay_length   EQU 10000 ;multiples of 10ms if prescaler=4
 string         DS.B  64    ;allocate 64 bytes
 null_1           equ   $00     ;null for end of string
 
@@ -8742,12 +8742,12 @@ mainLoop:
             ldy #output_string
             ldaa counter
             
-<<<<<<< HEAD
+;<<<<<<< HEAD
             jsr regular_message  ;For task 3
             ;bra read_serial ; For task 2
-=======
+;=======
             bra read_serial ; For task 2
->>>>>>> cb0821605a4b9bdda33fb2a8fd419296d3f134d2
+;>>>>>>> cb0821605a4b9bdda33fb2a8fd419296d3f134d2
             
 ; Start timer now
 subroutine_timer:      
