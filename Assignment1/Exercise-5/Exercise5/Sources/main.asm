@@ -39,12 +39,14 @@ time_taken     DS.B 2   ; Another time variable
 PORT_H_MASK    EQU %00000011
 
 ; Definitions for 7seg
-inputs      FCC "0123456789AbCdEF"         ;inputs
-outputs     DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71    ;corresponding hex codes
-dig1_index  DS.B 1                         ;variable to hold index of first digit
-dig2_index  DS.B 1                         ;variable for index of second digit
-to_display:  FDB "F0"                       ;to be displayed on 7seg
-output_code:FDB $0000                      ;variable to hold 7seg code of
+inputs         FCC "0123456789AbCdEF"         ;inputs
+outputs        DC.B $3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F,$77,$7C,$39,$5E,$79,$71    ;corresponding hex codes
+dig1_index     DS.B 1    ;variable to hold index of first digit
+dig2_index     DS.B 1    ;variable for index of second digit
+to_display:    FDB "F0"  ;to be displayed on 7seg
+seg_display    DS.B 1
+seg_display1    DS.B 1
+output_code:   FDB $0000 ;variable to hold 7seg code of
 
 
 ; code section
@@ -83,12 +85,13 @@ mainLoop:
             ldy #output_string
             ldaa counter
             
-            ;bra read_serial
+            ;bra read_serial ; For task 2
             
 ; Start timer now
 subroutine_timer:      
            MOVB #$80, TSCR1      ;enable timer
-           MOVB #$00, TSCR2      ;set prescaler to 1 -> highly accurate for shorter subroutines
+           MOVB #$07, TSCR2      ; Prescaler is set to 8. Timer speed = 24MHz/8 = 3MHz
+                                 ; As such, timer speed is set to 333.33ns per tick
            SEI
            LDD TCNT              ;load current timer count in D
            STD t_0               ;store in t_0 variable
@@ -100,7 +103,6 @@ subroutine_timer:
            end: bra *            ;demo over    
 
 string_to_serial:
-            ; Not sure if the tst and bpl are necessary
             tst SCI1SR1
             bpl string_to_serial
             
@@ -109,7 +111,7 @@ string_to_serial:
             ;beq  return        ; End program if string is finished
             stab SCI1DRL       ; Store in serial port
             inx 
-            cmpa #6
+            cmpa #6            ; Returns when input_string is completely uploaded to the serial
             beq  return   
             inca            
             bra string_to_serial
@@ -126,8 +128,19 @@ read_serial:
             beq read_serial ; Checks for a new character
             ldab  SCI1DRL   ; Reads new character into B
             
-            stab 0, y       ; Stores ascii value into output_string
-            iny
+            ;stab 0, y       ; Stores ascii value into output_string
+            stab seg_display
+            inc counter
+       
+read_serial1:
+            ldaa SCI1SR1
+            anda #mSCI1SR1_RDRF
+            
+            beq read_serial1 ; Checks for a new character
+            ldab  SCI1DRL   ; Reads new character into B
+            
+            ;stab 0, y       ; Stores ascii value into output_string
+            stab seg_display1
             inc counter
             
 initialise_io:
@@ -145,7 +158,7 @@ initialise_io:
            
 convert_setup:    
             ;CHANGE TO OUTPUT_STRING?
-            LDY #to_display;#output_string;        ;load the memory address of the first character
+            LDY #seg_display;#output_string;#to_display;        ;load the memory address of the first character
 convert_start:
             LDX #inputs           ;load the lookup array into X register
             LDAA #0               ;initiliase counter to iterate array
@@ -164,7 +177,8 @@ equivalent_found:
             
             STAA dig1_index
             JSR get_output_code1
-            INY                   ;increment Y so we are looking at 2nd input digit 
+            ;INY                   ;increment Y so we are looking at 2nd input digit 
+            LDY #seg_display1
             BRA convert_start     ;
 second_digit:
             STAA dig2_index
@@ -201,9 +215,9 @@ output7seg:
             ldaa #$0D         ;loads 00001101 to enable second 7seg
             staa PTP
             ldd output_code     ;load second digit into register A
-            stab PORTB        ;Change to $02 for simulation
+            stab $02        ;Change to $02 for simulation
             bsr delay         ;1ms delay
-            clr PORTB         ;clear PORTB
+            clr $02         ;clear PORTB
             bra output7seg
             
             
