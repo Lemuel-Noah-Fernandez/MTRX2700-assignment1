@@ -8715,10 +8715,10 @@ mainLoop:
             LDY   #output_string ; Y contains an empty 16 byte string
             
             ;BRA task2 ; For task 2 demo
-            JSR task3 ; For task 3 demo
+            ;JSR task3 ; For task 3 demo
                         
             ; For task 1 demo:
-            LDAB  #1  ; Loads either 0 or 1, 1 for uppercase and 0 for lower case
+            LDAB  #0  ; Loads either 0 or 1, 1 for uppercase and 0 for lower case
             BNE Upper
             BRA Lower ; Always branches to Loop
 
