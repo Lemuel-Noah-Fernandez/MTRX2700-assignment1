@@ -88,8 +88,12 @@ mainLoop:
             ldy #output_string
             ldaa counter
             
+<<<<<<< HEAD
             ;jsr regular_message  ;For task 3
             ;bra read_serial ; For task 2
+=======
+            bra read_serial ; For task 2
+>>>>>>> cb0821605a4b9bdda33fb2a8fd419296d3f134d2
             
 ; Start timer now
 subroutine_timer:      
