@@ -22,6 +22,9 @@
 The project is split into four main modules, each of which deal with different aspects/functionality of the HCS12 Microcontroller. These modules are demonstrated working together in the integration section (Ex. 5).
 
 ### Memory and Pointers (Ex. 1)
+This module focuses on manipulating information within memory. For each task, both an `input_string` and `output_string` variable are initialised and stored into index registers x and y. The tasks require individual characters wihtin the strings to either turn upper or lower case. In the functions `Lower` and `Upper`, this is done by first testing if a character is already lower or upper case by subtracting ascii values from them and branching based on the result. To turn a lower case character to upper case, the ascii value must have 32 subtracted from it whereas it must have 32 added to it to turn lower case from upper.
+
+After an individual character is changed, the result is stored in the `output_string` variable and both this variable and `input_string` are incremented to receive and manipulate the next character. Eventually, the end of a string will be reached. This is recognised as the `null` term character with ascii value 0 will be loaded into the index register. Once this is character is detected, the program wil finish.
 
 ### Digital Input and Output (Ex. 2)
 This module predominantly deals with outputting values to the 7 segment display, and using the push buttons inputs to generate interrupts. In the Exercise-2 CodeWarrior project, the variable `to_display` should be set to the desired two-digit hexadecimal output for the 7 segment display. Each digit is indexed to an array in the `convert` function, which is used to find the corresponding 7-segment output code using the `get_output_code` function. The two output codes are stored in `output_code`, which is output the the display using the `output7seg` function.
