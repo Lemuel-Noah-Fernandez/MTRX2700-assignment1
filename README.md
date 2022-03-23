@@ -31,6 +31,9 @@ This module predominantly deals with outputting values to the 7 segment display,
 
 When either of the PH0 or PH1 pushbuttons are pressed, an interrupt is triggered directing to the `port_h_isr` function. The interrupt service routine first determines which button has been pressed. If PH0, the display is cleared using `clear` function, if PH1, the hexadecimal value on the 7-segment increments. This is acheived by incrementing the stored index and updating the output code.
 
+#### Testing
+Testing and debugging for this module mainly took place in the simulator, using the `spc` command to view relevant memory addresses, as well as looking at the CPU registers and condition flags. A range of test cases were implemented to ensure the functions were adequately flexible. The functions assume valid inputs (0-F), another flaw is the overflow when the 7 segment display is incremented past FF, however with some additional checks this could be fixed to "wrap-around" to 00.
+
 ### Serial Input and Output (Ex. 3)
 
 ### Hardware Timer (Ex. 4)
@@ -39,6 +42,10 @@ This module develops functions which utilise the built in hardware timer of the 
 The `subroutine_timer` function can be used to time how long a subroutine takes to execute. This could be useful for comparing time complexities of different algorithms. To time a subroutine, change the line `JSR dummy-subroutine` with the target subroutine. The time taken in CPU clock ticks will be stored in the variable `time_taken` as well as in register D. For higher accuracy, the prescaler is set to 1 for this function, so obtain the actual time by multiplying the stored value by 41.67 nanoseconds. Additionally the function `STD` involves some overhead (2 clock cycles) which slightly inflates the time taken, however, since the intent is to *compare* subroutine times and this is a fixed error, it does not pose a serious issue.
 
 This module also includes a blueprint for a timer overflow interrupt, which can make a function run at set intervals independently of the rest of the software. Each time the timer overflows a counter is incremented, when this occurs a user written function can be run (`counter_overflow` is used as a default). The frequency at which the interrupt occurs can be determined by the size of the `counter` variable and the prescaler value. The default function used is trivial, but the program is capable of running time critical functions at highly accurate intervals.
+
+#### Testing
+Testing for this module made heavy use of visual feedback from the Dragonboard. Specifically an LED was blinked with frequency of the `variable_delay`, so changes in the `delay_length` variable and prescaler had noticable impacted how quickly the LED blinked. In order to check the timer count was being stored in memory, the CodeWarrior simulation was used along with `spc`. Similarly to with the variable delay, the timer interrupts were tested by associating an interrupt with a pattern of LED blinks. Visual inspection could confirm that the interrupt was triggering at regular intervals.
+
 
 ## Integration (Ex. 5)
 The task 5 module integrates functions developed in various other modules to complete specific tasks. As such, each of the tasks are very different.
