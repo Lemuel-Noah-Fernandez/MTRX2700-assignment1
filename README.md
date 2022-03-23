@@ -26,6 +26,9 @@ This module focuses on manipulating information within memory. For each task, bo
 
 After an individual character is changed, the result is stored in the `output_string` variable and both this variable and `input_string` are incremented to receive and manipulate the next character. Eventually, the end of a string will be reached. This is recognised as the `null` term character with ascii value 0 will be loaded into the index register. Once this is character is detected, the program wil finish.
 
+### Testing
+Testing for this module mainly had to do with the data section of the debugger. In this section, all variables that have been initialised are present and change in realtime as the code is stepped through. After every function was finalised, the debugger would step through to ensure everything was working as intended.
+
 ### Digital Input and Output (Ex. 2)
 This module predominantly deals with outputting values to the 7 segment display, and using the push buttons inputs to generate interrupts. In the Exercise-2 CodeWarrior project, the variable `to_display` should be set to the desired two-digit hexadecimal output for the 7 segment display. Each digit is indexed to an array in the `convert` function, which is used to find the corresponding 7-segment output code using the `get_output_code` function. The two output codes are stored in `output_code`, which is output the the display using the `output7seg` function.
 
