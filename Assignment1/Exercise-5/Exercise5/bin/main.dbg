@@ -8799,7 +8799,7 @@ initialise_io:
            
 convert_setup:    
             ;CHANGE TO OUTPUT_STRING?
-            LDY #output_string;#to_display        ;load the memory address of the first character
+            LDY #to_display;#output_string;        ;load the memory address of the first character
 convert_start:
             LDX #inputs           ;load the lookup array into X register
             LDAA #0               ;initiliase counter to iterate array
