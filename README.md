@@ -41,3 +41,9 @@ The `subroutine_timer` function can be used to time how long a subroutine takes 
 This module also includes a blueprint for a timer overflow interrupt, which can make a function run at set intervals independently of the rest of the software. Each time the timer overflows a counter is incremented, when this occurs a user written function can be run (`counter_overflow` is used as a default). The frequency at which the interrupt occurs can be determined by the size of the `counter` variable and the prescaler value. The default function used is trivial, but the program is capable of running time critical functions at highly accurate intervals.
 
 ## Integration (Ex. 5)
+The task 5 module integrates functions developed in various other modules to complete specific tasks. As such, each of the tasks are very different.
+Task 1: Firstly, the `baud_rate` is set to 9600, the timers `TSCR1/TSCR2` are initialised and the serial port is set up through function `SCI1_setup`. The `subroutine_timer` function calculates time by recording the time that has passed at a reference `t_0`, and then subtracting this number from the updated timer once the subroutine is finished. The subroutine pastes whatever is inside the `input_string` onto the serial.
+
+Task 2: Baud rate and serial are set-up similarly to task 1. First the serial is read to obtain an ascii value which is to later be displayed onto the 7-segment display. A variety of different functions starting from `intialise_io` are called to initialise the seven segment display, and then to convert the value obtained from serial into numbers that can be recognisable on the 7-seg display. Finally, `output7seg` is called and looped to display the desired numbers.
+
+
