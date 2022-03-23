@@ -8697,7 +8697,7 @@ output_string2  DS.B 64
 input_string2   FCB "at eIOu."
 null2           FCB 0 ; Set a null term
 output_string3  DS.B 64 
-input_string3   FCB "capitalise nocap"
+input_string3   FCB "no capitalise nocap"
 null3           FCB 0  ; Set a null term
 counter         FCB $0 ; A counter for letters in task3   
 
@@ -8715,7 +8715,7 @@ mainLoop:
             LDY   #output_string ; Y contains an empty 16 byte string
             
             ;BRA task2 ; For task 2 demo
-            ;JSR task3 ; For task 3 demo
+            JSR task3 ; For task 3 demo
                         
             ; For task 1 demo:
             LDAB  #0  ; Loads either 0 or 1, 1 for uppercase and 0 for lower case
@@ -8876,7 +8876,7 @@ task3:
 space_test:
             LDAA 0, x
             CMPA null2 ; If the null character is detected, end
-            BEQ word_test   ; Does this have to be final instead?
+            BEQ final;word_test   ; Does this have to be final instead?
             CMPA #32   ; ASCII value of a space
             BEQ word_test ; Branch to word_test if a space is detected
             INX
@@ -8884,34 +8884,48 @@ space_test:
             BRA space_test     
        
 word_test:
-            CMPB #6      ; Compare B to 6 (for 6 letters)
-            BGE capitalise ; If 6 or more letters in word, capitalise the first letter of the word
+            CMPB #6        ; Compare B to 6 (for 6 letters)
+            PSHB           ; Remember amount of letters used
+            BGE letter_counter ; If 6 or more letters in word, capitalise the first letter of the word          
             BRA finish_word
-            ;LDAB #0      ; After opertation is complete, turn LDY back to 0
-            ;BRA space_test ; If less than 6 letters, move to next word
+
+letter_counter:
+            DECB
+            DEX      ; Brings x position back to start of word
+            CMPB #0
+            BEQ capitalise
+            BRA letter_counter
+
             
 capitalise:
             ;PSHB  ; The number in B is how many letters are in the word to be capitalised. This is then stored on the stack
-            LDX #input_string3
+            ;LDX #input_string3
             LDAA 0, x
             SUBA #32
             STAA 0, y
             INX
             INY
-            BRA finish_word
+            BRA finish_word1
             ;BRA capitalise
             
 finish_word:
-
+            DECB
+            DEX      ; Brings x position back to start of word
+            CMPB #0
+            BEQ finish_word1
+            BRA finish_word
+     
+finish_word1:
             LDAA 0, x
-            ; Change to lower if needed
             STAA 0, y
-            DECB            ; Decrement B to see how many letters are present
+            ;DECB            ; Decrement B to see how many letters are present
             INX
             INY
-            CMPB #0
+            PULB            ; Get letter amount from stack
+            DECB
+            CMPB x
             BEQ space_test  ; If all letters in the word have been completed, movbe to next word
-            BRA finish_word ; If word is not yet finished, loop back to finish_word
+            BRA finish_word1 ; If word is not yet finished, loop back to finish_word
             
           
 final:
