@@ -31,7 +31,7 @@ inputs      FCC   "Hello World!"    ; string from memory
 carriage    equ   $0D   ;carriage return byte
 string      DS.B  64    ;allocate 64 bytes 
 null        equ   $00     ;null for end of string
-delay_length EQU 5 ;multiples of 10ms if prescaler=4
+delay_length EQU 100 ;multiples of 10ms if prescaler=4
 
 ; code section
             ORG   ROMStart
