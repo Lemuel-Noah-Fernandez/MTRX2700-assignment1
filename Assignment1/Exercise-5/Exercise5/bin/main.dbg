@@ -8739,7 +8739,7 @@ mainLoop:
             ldy #output_string
             ldaa counter
             
-            ;bra read_serial ; For task 2
+            bra read_serial ; For task 2
             
 ; Start timer now
 subroutine_timer:      
