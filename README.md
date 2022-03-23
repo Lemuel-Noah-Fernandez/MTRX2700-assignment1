@@ -63,4 +63,4 @@ Task 1: Firstly, the `baud_rate` is set to 9600, the timers `TSCR1/TSCR2` are in
 
 Task 2: Baud rate and serial are set-up similarly to task 1. First the serial is read to obtain an ascii value which is to later be displayed onto the 7-segment display. A variety of different functions starting from `intialise_io` are called to initialise the seven segment display, and then to convert the value obtained from serial into numbers that can be recognisable on the 7-seg display. Finally, `output7seg` is called and looped to display the desired numbers.
 
-
+Task 3: Integrating exercise 3 and 4, this function attempts to have the serial port receive a regular message from the terminal and display it through to the serial monitor after a variable delay. The terminal input is read and stored using the same function as in Exercise 3, only to then jump to a variable delay, and the proceeds to display the message on the serial monitor
